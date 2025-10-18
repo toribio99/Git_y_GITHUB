@@ -1,0 +1,778 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% Preámbulo universal con detección de motor
+\usepackage{iftex}
+
+\ifluatex
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setdefaultlanguage[variant=mexican]{spanish}
+\else
+  \ifxetex
+    \usepackage{fontspec}
+    \usepackage{polyglossia}
+    \setdefaultlanguage[variant=mexican]{spanish}
+  \else
+    \usepackage[T1]{fontenc}
+    \usepackage[spanish,es-tabla]{babel}
+  \fi
+\fi
+
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,skins,breakable}
+\usepackage{hyperref}
+\hyperref{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+% Configuración de listings para Bash
+\lstdefinestyle{bashstyle}{
+  language=bash,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  numbers=none
+}
+
+% Estilos de cajas
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  fonttitle=\bfseries,
+  title=#1,
+  breakable
+}
+
+\newtcolorbox{warningbox}[1][]{
+  colback=orange!5!white,
+  colframe=orange!75!black,
+  fonttitle=\bfseries,
+  title=#1,
+  breakable
+}
+
+\newtcolorbox{successbox}[1][]{
+  colback=green!5!white,
+  colframe=green!75!black,
+  fonttitle=\bfseries,
+  title=#1,
+  breakable
+}
+
+\title{\Huge\bfseries Guía Completa:\\Git y GitHub\\para Proyectos LaTeX}
+\author{\Large Toribio de J. Arrieta F.}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Introducción}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{¿Qué es Git?}
+
+\textbf{Git} es un sistema de control de versiones distribuido que permite:
+\begin{itemize}
+  \item Guardar el historial completo de cambios de tus archivos
+  \item Volver a versiones anteriores cuando lo necesites
+  \item Trabajar sin internet (todo se guarda localmente)
+  \item Colaborar con otras personas en el mismo proyecto
+\end{itemize}
+
+\subsection{¿Qué es GitHub?}
+
+\textbf{GitHub} es una plataforma en la nube que:
+\begin{itemize}
+  \item Aloja tus repositorios Git en internet
+  \item Sirve como respaldo de tu trabajo
+  \item Permite acceder a tus proyectos desde cualquier computadora
+  \item Facilita la colaboración y el código abierto
+\end{itemize}
+
+\subsection{¿Por qué usar Git + GitHub para LaTeX?}
+
+\begin{successbox}[Beneficios para proyectos LaTeX]
+\begin{enumerate}
+  \item \textbf{Nunca más perderás trabajo}: Cada versión queda guardada
+  \item \textbf{Recupera versiones antiguas}: Si borras algo por error, puedes recuperarlo
+  \item \textbf{Respaldo en la nube}: Si tu computadora se daña, tus archivos están seguros
+  \item \textbf{Trabajo offline}: Git funciona sin internet, solo necesitas conexión para sincronizar
+  \item \textbf{Historial completo}: Ves qué cambiaste, cuándo y por qué
+\end{enumerate}
+\end{successbox}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Configuración Inicial}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Instalación de GitHub CLI}
+
+El GitHub CLI (\texttt{gh}) es la herramienta oficial para interactuar con GitHub desde la terminal.
+
+\begin{lstlisting}[style=bashstyle]
+# Instalar con Homebrew
+brew install gh
+\end{lstlisting}
+
+\subsection{Autenticación con GitHub}
+
+\begin{lstlisting}[style=bashstyle]
+# Iniciar autenticación
+gh auth login
+\end{lstlisting}
+
+\textbf{Pasos que verás:}
+\begin{enumerate}
+  \item Te dará un código de un solo uso (ej: \texttt{BC0B-57BD})
+  \item Te pedirá abrir: \url{https://github.com/login/device}
+  \item Pega el código en la página web
+  \item Autoriza GitHub CLI
+  \item ¡Listo! Ya estás conectado
+\end{enumerate}
+
+\subsection{Verificar autenticación}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver estado de autenticación
+gh auth status
+\end{lstlisting}
+
+Deberías ver algo como:
+\begin{lstlisting}[style=bashstyle]
+github.com
+  ✓ Logged in to github.com account toribio99 (keyring)
+  - Active account: true
+\end{lstlisting}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Conceptos Fundamentales}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Vocabulario básico}
+
+\begin{description}
+  \item[Repositorio (repo)] Carpeta que contiene tu proyecto y todo su historial de cambios
+  \item[Commit] ``Fotografía'' o punto de guardado de tu proyecto en un momento específico
+  \item[Staging Area] Área de preparación donde pones archivos antes de hacer commit
+  \item[Push] Subir tus commits a GitHub (requiere internet)
+  \item[Pull] Descargar cambios de GitHub a tu computadora
+  \item[Clone] Copiar un repositorio de GitHub a tu computadora
+  \item[Remote] Conexión entre tu repositorio local y GitHub
+\end{description}
+
+\subsection{El flujo de trabajo básico}
+
+\begin{infobox}[Ciclo típico de trabajo]
+\begin{enumerate}
+  \item \textbf{Editas} tus archivos .tex normalmente
+  \item \textbf{git add} --- Agregas los cambios al área de preparación
+  \item \textbf{git commit} --- Guardas los cambios con un mensaje descriptivo
+  \item \textbf{git push} --- Subes a GitHub (cuando tengas internet)
+\end{enumerate}
+\end{infobox}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Comandos Esenciales}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Ver el estado actual}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver qué archivos cambiaron
+git status
+\end{lstlisting}
+
+\textbf{Posibles salidas:}
+\begin{itemize}
+  \item \texttt{modified: archivo.tex} --- Archivo modificado
+  \item \texttt{Untracked files} --- Archivos nuevos que Git no rastrea
+  \item \texttt{Changes to be committed} --- Archivos listos para guardar
+  \item \texttt{nothing to commit} --- Todo está guardado
+\end{itemize}
+
+\subsection{Agregar archivos al área de preparación}
+
+\begin{lstlisting}[style=bashstyle]
+# Agregar UN archivo específico
+git add archivo.tex
+
+# Agregar TODOS los archivos modificados
+git add .
+
+# Agregar múltiples archivos específicos
+git add archivo1.tex archivo2.tex
+\end{lstlisting}
+
+\subsection{Crear un commit (guardar cambios)}
+
+\begin{lstlisting}[style=bashstyle]
+# Commit con mensaje descriptivo
+git commit -m "Descripción breve del cambio"
+\end{lstlisting}
+
+\begin{warningbox}[Mensajes de commit efectivos]
+\textbf{Buenos ejemplos:}
+\begin{itemize}
+  \item \texttt{"Agregada sección sobre funciones trigonométricas"}
+  \item \texttt{"Corregido error en la ecuación de la línea 45"}
+  \item \texttt{"Actualizada bibliografía con 3 nuevas referencias"}
+\end{itemize}
+
+\textbf{Malos ejemplos:}
+\begin{itemize}
+  \item \texttt{"cambios"} (muy vago)
+  \item \texttt{"asdf"} (sin sentido)
+  \item \texttt{"arreglado"} (¿qué arreglaste?)
+\end{itemize}
+\end{warningbox}
+
+\subsection{Subir cambios a GitHub}
+
+\begin{lstlisting}[style=bashstyle]
+# Subir todos los commits al repositorio remoto
+git push
+\end{lstlisting}
+
+\begin{infobox}[Nota importante]
+\texttt{git push} requiere conexión a internet. Puedes hacer múltiples commits sin internet y luego hacer un solo \texttt{push} cuando te conectes.
+\end{infobox}
+
+\subsection{Ver el historial de cambios}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver historial completo
+git log
+
+# Ver historial compacto (una línea por commit)
+git log --oneline
+
+# Ver últimos 5 commits
+git log --oneline -5
+\end{lstlisting}
+
+\textbf{Ejemplo de salida:}
+\begin{lstlisting}[style=bashstyle]
+e72c314 Agregada nota final al taller
+aa37424 Versión inicial del proyecto
+\end{lstlisting}
+
+\subsection{Ver diferencias entre versiones}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver qué cambió en archivos modificados (no staged)
+git diff
+
+# Ver cambios en archivos en staging area
+git diff --staged
+
+# Ver cambios en un archivo específico
+git diff archivo.tex
+\end{lstlisting}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Trabajar con Repositorios de GitHub}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Clonar un repositorio desde GitHub}
+
+\begin{lstlisting}[style=bashstyle]
+# Clonar usando GitHub CLI
+gh repo clone usuario/nombre-repositorio
+
+# Ejemplo:
+gh repo clone toribio99/LaTeX-Varios
+\end{lstlisting}
+
+Esto crea una carpeta con todo el proyecto y su historial completo.
+
+\subsection{Crear un nuevo repositorio en GitHub}
+
+\begin{lstlisting}[style=bashstyle]
+# Crear repositorio público
+gh repo create nombre-repositorio --public \
+  --description "Descripción del proyecto"
+
+# Ejemplo:
+gh repo create MiTesisLatex --public \
+  --description "Tesis de maestría en LaTeX"
+\end{lstlisting}
+
+\subsection{Ver repositorios remotos}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver a dónde está conectado tu repositorio
+git remote -v
+\end{lstlisting}
+
+\textbf{Salida típica:}
+\begin{lstlisting}[style=bashstyle]
+origin  https://github.com/toribio99/LaTeX-Varios.git (fetch)
+origin  https://github.com/toribio99/LaTeX-Varios.git (push)
+\end{lstlisting}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Flujo de Trabajo Completo: Ejemplo Práctico}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Escenario: Editaste un archivo}
+
+Supongamos que editaste el archivo:\\
+\texttt{TallerTrianguloRectangulo.tex}
+
+\textbf{Ubicación del proyecto:}\\
+\texttt{\textasciitilde/Documents/LaTeX-GitHub/LaTeX-Varios/}
+
+\subsection{Paso 1: Navega al directorio}
+
+\begin{lstlisting}[style=bashstyle]
+cd ~/Documents/LaTeX-GitHub/LaTeX-Varios
+\end{lstlisting}
+
+\subsection{Paso 2: Verifica qué cambió}
+
+\begin{lstlisting}[style=bashstyle]
+git status
+\end{lstlisting}
+
+\textbf{Salida:}
+\begin{lstlisting}[style=bashstyle]
+Changes not staged for commit:
+  modified:   Clases De Sheyra/Geometría analíca/TallerTrianguloRectangulo.tex
+\end{lstlisting}
+
+\subsection{Paso 3: Agrega el archivo modificado}
+
+\begin{lstlisting}[style=bashstyle]
+# Opción 1: Agregar ese archivo específico
+git add "Clases De Sheyra/Geometría analíca/TallerTrianguloRectangulo.tex"
+
+# Opción 2: Agregar todos los cambios
+git add .
+\end{lstlisting}
+
+\subsection{Paso 4: Verifica el estado nuevamente}
+
+\begin{lstlisting}[style=bashstyle]
+git status
+\end{lstlisting}
+
+\textbf{Salida:}
+\begin{lstlisting}[style=bashstyle]
+Changes to be committed:
+  modified:   Clases De Sheyra/Geometría analíca/TallerTrianguloRectangulo.tex
+\end{lstlisting}
+
+\subsection{Paso 5: Crea el commit}
+
+\begin{lstlisting}[style=bashstyle]
+git commit -m "Agregada nota final al taller de geometría analítica"
+\end{lstlisting}
+
+\textbf{Salida:}
+\begin{lstlisting}[style=bashstyle]
+[main e72c314] Agregada nota final al taller de geometría analítica
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+\end{lstlisting}
+
+\subsection{Paso 6: Sube a GitHub}
+
+\begin{lstlisting}[style=bashstyle]
+git push
+\end{lstlisting}
+
+\textbf{Salida:}
+\begin{lstlisting}[style=bashstyle]
+To https://github.com/toribio99/LaTeX-Varios.git
+   aa37424..e72c314  main -> main
+\end{lstlisting}
+
+\begin{successbox}[¡Listo!]
+Tu cambio ahora está guardado en:
+\begin{itemize}
+  \item Tu computadora (Mac)
+  \item GitHub (en la nube)
+\end{itemize}
+
+Puedes verlo en: \url{https://github.com/toribio99/LaTeX-Varios}
+\end{successbox}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Trabajar Sin Internet}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Git funciona 100\% local}
+
+\textbf{Lo que SÍ puedes hacer sin internet:}
+\begin{itemize}
+  \item Editar tus archivos .tex
+  \item Compilar con LaTeX
+  \item \texttt{git add} (agregar archivos)
+  \item \texttt{git commit} (guardar cambios)
+  \item \texttt{git status} (ver estado)
+  \item \texttt{git log} (ver historial)
+  \item \texttt{git diff} (ver diferencias)
+\end{itemize}
+
+\textbf{Lo que NO puedes hacer sin internet:}
+\begin{itemize}
+  \item \texttt{git push} (subir a GitHub)
+  \item \texttt{git pull} (descargar de GitHub)
+  \item \texttt{gh repo create} (crear repositorio en GitHub)
+  \item Clonar repositorios
+\end{itemize}
+
+\subsection{Flujo de trabajo sin internet}
+
+\begin{infobox}[Escenario: Trabajas offline]
+\textbf{Lunes (sin internet):}
+\begin{lstlisting}[style=bashstyle]
+# Editas archivo1.tex
+git add archivo1.tex
+git commit -m "Agregué introducción"
+
+# Editas archivo2.tex
+git add archivo2.tex
+git commit -m "Completé capítulo 2"
+\end{lstlisting}
+
+\textbf{Martes (con internet):}
+\begin{lstlisting}[style=bashstyle]
+# Subes TODOS los commits que hiciste offline
+git push
+\end{lstlisting}
+
+Resultado: Los 2 commits se suben a GitHub de una vez.
+\end{infobox}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Recuperar Versiones Anteriores}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Ver historial}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver lista de commits
+git log --oneline
+\end{lstlisting}
+
+\textbf{Ejemplo de salida:}
+\begin{lstlisting}[style=bashstyle]
+e72c314 Agregada nota final al taller
+aa37424 Versión inicial del proyecto
+9d82076 Primer commit
+\end{lstlisting}
+
+\subsection{Recuperar un archivo específico}
+
+\begin{lstlisting}[style=bashstyle]
+# Recuperar archivo de un commit específico
+git checkout aa37424 archivo.tex
+\end{lstlisting}
+
+\begin{warningbox}[¡Atención!]
+Este comando \textbf{sobrescribe} el archivo actual con la versión antigua. Asegúrate de hacer commit de tus cambios actuales primero, o los perderás.
+\end{warningbox}
+
+\subsection{Ver un archivo sin modificarlo}
+
+\begin{lstlisting}[style=bashstyle]
+# Ver contenido de archivo en un commit específico
+git show aa37424:ruta/al/archivo.tex
+\end{lstlisting}
+
+Esto solo \textbf{muestra} el contenido, no modifica tu archivo.
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Archivo .gitignore para LaTeX}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{¿Qué es .gitignore?}
+
+Un archivo especial que le dice a Git qué archivos \textbf{NO} rastrear.
+
+\subsection{¿Por qué necesitamos .gitignore en LaTeX?}
+
+LaTeX genera muchos archivos auxiliares (\texttt{.aux}, \texttt{.log}, \texttt{.synctex.gz}, etc.) que:
+\begin{itemize}
+  \item Cambian cada vez que compilas
+  \item No son necesarios para el control de versiones
+  \item Hacen que Git muestre cambios innecesarios
+\end{itemize}
+
+\subsection{Contenido típico de .gitignore para LaTeX}
+
+\begin{lstlisting}[style=bashstyle]
+# Archivos auxiliares de LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.listing
+
+# PDFs (opcional - descomenta si quieres versionar PDFs)
+# *.pdf
+
+# Archivos de sistema
+.DS_Store
+*~
+*.swp
+__MACOSX/
+
+# Otros
+general.idx
+*.zip
+\end{lstlisting}
+
+\subsection{Crear .gitignore}
+
+\begin{lstlisting}[style=bashstyle]
+# Crear archivo .gitignore en la raíz del proyecto
+cd ~/Documents/LaTeX-GitHub/MiProyecto
+nano .gitignore
+# (pega el contenido de arriba y guarda)
+\end{lstlisting}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Solución de Problemas Comunes}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Olvidé hacer commit antes de editar}
+
+\textbf{Problema:} Editaste un archivo pero quieres volver a la versión anterior.
+
+\textbf{Solución:}
+\begin{lstlisting}[style=bashstyle]
+# Descartar cambios no guardados
+git restore archivo.tex
+\end{lstlisting}
+
+\subsection{Hice commit pero no quería hacerlo}
+
+\textbf{Problema:} Hiciste commit de cambios que no querías guardar.
+
+\textbf{Solución (antes de push):}
+\begin{lstlisting}[style=bashstyle]
+# Deshacer el último commit (mantiene cambios)
+git reset --soft HEAD~1
+
+# Deshacer el último commit (descarta cambios)
+git reset --hard HEAD~1
+\end{lstlisting}
+
+\begin{warningbox}[¡Cuidado con --hard!]
+\texttt{git reset --hard} \textbf{elimina permanentemente} tus cambios. Úsalo solo si estás seguro.
+\end{warningbox}
+
+\subsection{Error al hacer push}
+
+\textbf{Problema:} \texttt{git push} falla con error.
+
+\textbf{Posibles causas y soluciones:}
+\begin{enumerate}
+  \item \textbf{Sin conexión a internet}
+    \begin{lstlisting}[style=bashstyle]
+# Espera a tener internet y vuelve a intentar
+git push
+    \end{lstlisting}
+
+  \item \textbf{Cambios en GitHub que no tienes localmente}
+    \begin{lstlisting}[style=bashstyle]
+# Descargar cambios primero
+git pull
+# Luego subir
+git push
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{No sé en qué estado está mi repositorio}
+
+\textbf{Solución:}
+\begin{lstlisting}[style=bashstyle]
+# Ver estado completo
+git status
+
+# Ver últimos commits
+git log --oneline -5
+
+# Ver diferencias no guardadas
+git diff
+\end{lstlisting}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Comandos de Referencia Rápida}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Comando} & \textbf{Descripción} \\
+\hline
+\texttt{git status} & Ver estado actual del repositorio \\
+\hline
+\texttt{git add .} & Agregar todos los cambios \\
+\hline
+\texttt{git add archivo.tex} & Agregar archivo específico \\
+\hline
+\texttt{git commit -m "msg"} & Guardar cambios con mensaje \\
+\hline
+\texttt{git push} & Subir commits a GitHub \\
+\hline
+\texttt{git pull} & Descargar cambios de GitHub \\
+\hline
+\texttt{git log --oneline} & Ver historial compacto \\
+\hline
+\texttt{git diff} & Ver cambios no guardados \\
+\hline
+\texttt{git restore archivo} & Descartar cambios no guardados \\
+\hline
+\texttt{gh auth status} & Ver estado de autenticación \\
+\hline
+\texttt{gh repo create} & Crear repositorio en GitHub \\
+\hline
+\texttt{gh repo clone} & Clonar repositorio \\
+\hline
+\end{tabular}
+\caption{Comandos Git y GitHub más usados}
+\end{table}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Flujo de Trabajo Recomendado}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Rutina diaria}
+
+\begin{successbox}[Recomendación: Commits frecuentes]
+\textbf{Al empezar a trabajar:}
+\begin{lstlisting}[style=bashstyle]
+cd ~/Documents/LaTeX-GitHub/MiProyecto
+git status  # Ver si hay cambios pendientes
+git pull    # Actualizar (si trabajas desde varias computadoras)
+\end{lstlisting}
+
+\textbf{Durante el trabajo:}
+\begin{itemize}
+  \item Haz commits cada vez que completes una sección importante
+  \item No esperes a que todo esté ``perfecto''
+  \item Un commit por cada cambio lógico
+\end{itemize}
+
+\textbf{Al terminar la sesión:}
+\begin{lstlisting}[style=bashstyle]
+git add .
+git commit -m "Descripción de lo que hiciste hoy"
+git push  # Si tienes internet
+\end{lstlisting}
+\end{successbox}
+
+\subsection{Frecuencia de commits}
+
+\textbf{Buenas prácticas:}
+\begin{itemize}
+  \item \textbf{Muy frecuente}: Cada cambio significativo (ej: completar una sección)
+  \item \textbf{Moderado}: Al final de cada sesión de trabajo
+  \item \textbf{Mínimo}: Al menos una vez al día si trabajaste
+\end{itemize}
+
+\textbf{No recomendado:}
+\begin{itemize}
+  \item Una vez por semana (demasiado tiempo entre commits)
+  \item Solo cuando terminas el proyecto completo
+  \item Cada pequeño cambio de una palabra
+\end{itemize}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Organización de Repositorios LaTeX}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Estructura recomendada}
+
+Para proyectos LaTeX grandes, organiza por temas:
+
+\begin{lstlisting}[style=bashstyle]
+LaTeX-GitHub/
+├── LaTeX-Varios/              # Trabajos misceláneos
+├── LaTeX-Libros-Terminados/   # Libros completos
+├── LaTeX-Practicas/           # Ejercicios y prácticas
+├── LaTeX-Fisica/              # Proyectos de física
+└── LaTeX-Matematicas/         # Proyectos de matemáticas
+\end{lstlisting}
+
+\subsection{Cada repositorio debe contener}
+
+\begin{itemize}
+  \item \texttt{.gitignore} --- Lista de archivos a ignorar
+  \item Archivos \texttt{.tex} --- Tus documentos fuente
+  \item Carpetas de figuras/imágenes
+  \item \texttt{README.md} (opcional) --- Descripción del proyecto
+\end{itemize}
+
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\section{Conclusión}
+%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\subsection{Beneficios de usar Git + GitHub}
+
+\begin{successbox}[¡Nunca más perderás trabajo!]
+Con Git y GitHub:
+\begin{itemize}
+  \item Tu trabajo está seguro en la nube
+  \item Puedes recuperar cualquier versión anterior
+  \item Trabajas con confianza sabiendo que todo está respaldado
+  \item Colaboras fácilmente con otras personas
+  \item Accedes a tus proyectos desde cualquier computadora
+\end{itemize}
+\end{successbox}
+
+\subsection{Los 3 comandos que usarás el 90\% del tiempo}
+
+\begin{lstlisting}[style=bashstyle]
+git add .
+git commit -m "Descripción del cambio"
+git push
+\end{lstlisting}
+
+\subsection{Recursos adicionales}
+
+\begin{itemize}
+  \item Documentación oficial de Git: \url{https://git-scm.com/doc}
+  \item GitHub CLI: \url{https://cli.github.com}
+  \item Tu perfil en GitHub: \url{https://github.com/toribio99}
+\end{itemize}
+
+\vspace{1cm}
+\begin{center}
+\Large\textbf{¡Feliz versionado!}
+
+\medskip
+\normalsize
+Documento creado el \today
+
+\smallskip
+\textit{Toribio de J. Arrieta F.}
+\end{center}
+
+\end{document}
