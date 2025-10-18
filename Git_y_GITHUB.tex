@@ -1,5 +1,5 @@
 % !TEX program = lualatex
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 
 % Preámbulo universal con detección de motor
 \usepackage{iftex}
@@ -181,6 +181,113 @@ github.com
   \item \textbf{git commit} --- Guardas los cambios con un mensaje descriptivo
   \item \textbf{git push} --- Subes a GitHub (cuando tengas internet)
 \end{enumerate}
+\end{infobox}
+
+\subsection{Concepto crucial: Git NO sincroniza automáticamente}
+
+\begin{warningbox}[¡MUY IMPORTANTE!]
+\textbf{Pregunta frecuente:} ``Si edito un archivo en \texttt{LaTeX-GitHub/}, ¿se actualiza automáticamente en GitHub y en \texttt{03\_LaTex/}?''
+
+\textbf{Respuesta:} \textbf{NO.} Nada es automático. Los tres lugares son COMPLETAMENTE INDEPENDIENTES.
+\end{warningbox}
+
+\subsubsection{Los tres lugares de almacenamiento}
+
+Cuando trabajas con Git y GitHub, tus archivos pueden existir en hasta 3 lugares diferentes:
+
+\begin{enumerate}
+  \item \textbf{Carpetas originales} (ej: \texttt{03\_LaTex/})
+  \begin{itemize}
+    \item Tus archivos originales
+    \item Pueden tener Git local
+    \item NO están conectados a GitHub
+    \item Los cambios aquí NO van a ningún lado automáticamente
+  \end{itemize}
+
+  \item \textbf{Carpetas clonadas} (ej: \texttt{LaTeX-GitHub/})
+  \begin{itemize}
+    \item Copias descargadas desde GitHub
+    \item SÍ están conectadas a GitHub
+    \item Los cambios aquí NO se suben automáticamente
+    \item Debes hacer \texttt{git add}, \texttt{git commit}, \texttt{git push} manualmente
+  \end{itemize}
+
+  \item \textbf{GitHub} (la nube)
+  \begin{itemize}
+    \item Tus repositorios en internet
+    \item Solo se actualiza cuando haces \texttt{git push}
+    \item Requiere internet
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{¿Qué pasa cuando editas un archivo?}
+
+\begin{warningbox}[Escenario A: Editas en LaTeX-GitHub/]
+\textbf{Si editas:} \texttt{LaTeX-GitHub/LaTeX-Varios/archivo.tex}
+
+\textbf{Resultado:}
+\begin{itemize}
+  \item ❌ NO aparece automáticamente en \texttt{03\_LaTex/}
+  \item ❌ NO sube automáticamente a GitHub
+  \item ✅ SOLO cambia en \texttt{LaTeX-GitHub/}
+\end{itemize}
+
+\textbf{Para subir a GitHub:}
+\begin{lstlisting}[style=bashstyle]
+git add .
+git commit -m "mensaje"
+git push  # Solo aquí sube a GitHub
+\end{lstlisting}
+\end{warningbox}
+
+\begin{warningbox}[Escenario B: Editas en 03\_LaTex/]
+\textbf{Si editas:} \texttt{03\_LaTex/Practicas De Latex/archivo.tex}
+
+\textbf{Resultado:}
+\begin{itemize}
+  \item ❌ NO aparece en \texttt{LaTeX-GitHub/}
+  \item ❌ NO sube a GitHub (no está conectado)
+  \item ✅ SOLO cambia en \texttt{03\_LaTex/}
+\end{itemize}
+
+\textbf{Esta carpeta NO está conectada a GitHub}, así que aunque hagas commit, no puedes hacer push.
+\end{warningbox}
+
+\subsubsection{Recomendación: ¿Dónde trabajar?}
+
+Tienes tres opciones:
+
+\begin{enumerate}
+  \item \textbf{Opción 1: Trabajar SOLO en LaTeX-GitHub/} (recomendado)
+  \begin{itemize}
+    \item Editas archivos en \texttt{LaTeX-GitHub/}
+    \item Haces \texttt{git add}, \texttt{git commit}, \texttt{git push} cuando quieras
+    \item \texttt{03\_LaTex/} queda como respaldo antiguo (opcional)
+  \end{itemize}
+
+  \item \textbf{Opción 2: Borrar 03\_LaTex/ y trabajar solo en LaTeX-GitHub/}
+  \begin{itemize}
+    \item Libera espacio en disco
+    \item Solo trabajas en un lugar
+    \item Todo está respaldado en GitHub
+  \end{itemize}
+
+  \item \textbf{Opción 3: Mantener ambas carpetas}
+  \begin{itemize}
+    \item Trabajas en \texttt{LaTeX-GitHub/}
+    \item \texttt{03\_LaTex/} permanece como respaldo local
+    \item Debes copiar manualmente si quieres sincronizar (no recomendado)
+  \end{itemize}
+\end{enumerate}
+
+\begin{infobox}[Resumen importante]
+\begin{itemize}
+  \item Git NO sincroniza automáticamente
+  \item GitHub NO se actualiza automáticamente
+  \item Debes hacer \texttt{git push} manualmente para subir cambios
+  \item Carpetas diferentes son independientes entre sí
+  \item \textbf{Recomendación:} Trabaja solo en \texttt{LaTeX-GitHub/}
+\end{itemize}
 \end{infobox}
 
 %━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
