@@ -27,3 +27,6 @@ __MACOSX/
 # Otros
 general.idx
 *.zip
+
+# Carpetas de compilación
+build/
